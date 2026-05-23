@@ -50,3 +50,21 @@ func (r *Reporter) Report(results []DriftResult) bool {
 	}
 	return driftDetected
 }
+
+// Summary writes a single-line summary of the overall drift results,
+// including counts of OK, drifted, and missing manifests.
+func (r *Reporter) Summary(results []DriftResult) {
+	ok, drifted, missing := 0, 0, 0
+	for _, res := range results {
+		switch {
+		case res.Missing:
+			missing++
+		case len(res.Drifts) > 0:
+			drifted++
+		default:
+			ok++
+		}
+	}
+	fmt.Fprintf(r.out, "\nSummary: %d OK, %d drifted, %d missing (total: %d)\n",
+		ok, drifted, missing, len(results))
+}
