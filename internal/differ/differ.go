@@ -60,6 +60,8 @@ func Compare(
 }
 
 // diffObjects recursively compares two unstructured objects and returns field diffs.
+// Only fields present in repo are checked; fields present only in live are ignored,
+// as live objects may contain server-side fields not declared in the repo manifest.
 func diffObjects(repo, live map[string]interface{}, prefix string) []FieldDiff {
 	var diffs []FieldDiff
 	for k, repoVal := range repo {
@@ -85,4 +87,14 @@ func fieldPath(prefix, key string) string {
 		return key
 	}
 	return prefix + "." + key
+}
+
+// HasDrift returns true if any of the provided results contain drift.
+func HasDrift(results []DriftResult) bool {
+	for _, r := range results {
+		if r.Drifted {
+			return true
+		}
+	}
+	return false
 }
