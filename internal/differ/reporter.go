@@ -68,3 +68,15 @@ func (r *Reporter) Summary(results []DriftResult) {
 	fmt.Fprintf(r.out, "\nSummary: %d OK, %d drifted, %d missing (total: %d)\n",
 		ok, drifted, missing, len(results))
 }
+
+// FilterDrifted returns only the results that have drift or are missing,
+// making it easy to process or display only the problematic manifests.
+func FilterDrifted(results []DriftResult) []DriftResult {
+	var out []DriftResult
+	for _, res := range results {
+		if res.Missing || len(res.Drifts) > 0 {
+			out = append(out, res)
+		}
+	}
+	return out
+}
